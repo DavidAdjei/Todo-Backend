@@ -1,5 +1,5 @@
-exports.createDb = `CREATE DATABASE IF NOT EXISTS todos_db`;
-exports.useDb = "USE todos_db";
+exports.createDb = `CREATE DATABASE IF NOT EXISTS bscrxbonnkdukldwjvtl`;
+exports.useDb = "USE bscrxbonnkdukldwjvtl";
 exports.createUserTable = `CREATE TABLE IF NOT EXISTS users(
                             id INT AUTO_INCREMENT PRIMARY KEY,
                             username VARCHAR(200) NOT NULL,
