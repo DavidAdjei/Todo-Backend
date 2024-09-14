@@ -3,10 +3,6 @@ const db = require("../config/db");
 const { hashPassword, comparePassword } = require('../helpers/userHelpers');
 const jwt = require('jsonwebtoken');
 
-function generateToken(user, type, expiresIn) {
-    return jwt.sign({ _id: user.id, type }, process.env.JWT_SECRET, { expiresIn });
-}
-
 exports.createUser = async (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
@@ -41,9 +37,8 @@ exports.createUser = async (req, res) => {
             });
         }
 
-        const token = generateToken(newUser[0], 'auth', '7d');
+        req.session.user = newUser.id;
         return res.status(200).json({
-            token,
             user: newUser[0]
         });
 
@@ -83,14 +78,39 @@ exports.loginUser = async (req, res) => {
             })
         }
         
-        const token = generateToken(existingUser[0], 'auth', '7d');
+        req.session.user = existingUser.id;
         return res.status(200).json({
-            token,
             user: existingUser[0]
         });
-
     } catch (err) {
         console.error("Error logging in user:", err);
+        return res.status(500).json({
+            error: "Internal Server Error"
+        });
+    }
+};
+
+exports.isAuth = (req, res, next) => {
+  if (req.session.user) {
+    next();
+  } else {
+    return res.status(403).json({ error: "Not authenticated" });
+  }
+};
+
+exports.authenticate = async (req, res) => {
+    const id = req.session.user;
+    try {
+        const existingUser = await User.findUserById(id);
+        if (existingUser.length === 0) {
+            return res.status(401).json({
+                error: "User not found"
+            });
+        }
+        return res.status(200).json({
+            user: existingUser[0]
+        });
+    } catch (err) {
         return res.status(500).json({
             error: "Internal Server Error"
         });
