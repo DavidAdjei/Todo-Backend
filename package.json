@@ -1,0 +1,23 @@
+{
+  "name": "Todo_Server",
+  "version": "1.0.0",
+  "description": "Backend for the todo app",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "fs": "^0.0.1-security",
+    "jwt": "^0.2.0",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.10.2",
+    "nodemailer": "^6.9.14",
+    "nodemon": "^3.1.4",
+    "path": "^0.12.7"
+  }
+}
