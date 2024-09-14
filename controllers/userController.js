@@ -9,15 +9,11 @@ function generateToken(user, type, expiresIn) {
 
 exports.createUser = async (req, res) => {
     const { username, email, password } = req.body;
-    console.log(req.body)
-
     if (!username || !email || !password) {
         return res.status(401).json({
             error: "All fields are required"
         });
     }
-
-
     if (password.length < 8) {
         return res.status(401).json({
             error: "Password must be more than 8 characters"
@@ -34,8 +30,6 @@ exports.createUser = async (req, res) => {
         }
 
         const hashedPassword = await hashPassword(password);
-        console.log(hashedPassword)
-
         const result = await User.createUser(username, email, hashedPassword);
         const userId = result.insertId;
 

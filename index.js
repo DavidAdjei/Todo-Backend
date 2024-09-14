@@ -10,13 +10,15 @@ require('dotenv').config();
 const port = process.env.PORT || 5000;
 app.use(express.json());
 app.use(morgan('dev'));
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    methods: "GET,POST,PUT,DELETE",
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: process.env.CLIENT_URL,
+//     methods: "GET,POST,PUT,DELETE",
+//     credentials: true,
+//   })
+// );
+
+app.use(cors());
 
 app.get('/', (req, res) => {
    res.send('hello from simple server :)');

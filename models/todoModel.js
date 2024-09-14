@@ -1,44 +1,90 @@
-const db = require('../config/db');
+// models/todoModel.js
+const pool = require('../config/db');
 
-
-exports.allTodos = (userId, callback) => {
+exports.allTodos = async (userId) => {
     const query = "SELECT * FROM todos WHERE user_id = ?";
-    db.query(query, [userId], callback);
-}
+    try {
+        const [rows] = await pool.query(query, [userId]);
+        return rows;
+    } catch (err) {
+        console.error('Error fetching all todos:', err);
+        throw err;
+    }
+};
 
-exports.allCompletedTodos = (userId, callback) => {
+exports.allCompletedTodos = async (userId) => {
     const query = "SELECT * FROM todos WHERE user_id = ? AND is_completed = ?";
-    db.query(query, [userId, 1], callback)
-}
+    try {
+        const [rows] = await pool.query(query, [userId, 1]);
+        return rows;
+    } catch (err) {
+        console.error('Error fetching completed todos:', err);
+        throw err;
+    }
+};
 
-exports.allInCompletedTodos = (userId, callback) => {
+exports.allInCompletedTodos = async (userId) => {
     const query = "SELECT * FROM todos WHERE user_id = ? AND is_completed = ?";
-    db.query(query, [userId, 0], callback)
-}
+    try {
+        const [rows] = await pool.query(query, [userId, 0]);
+        return rows;
+    } catch (err) {
+        console.error('Error fetching incomplete todos:', err);
+        throw err;
+    }
+};
 
-exports.createTodo = (userId, description, callback) => {
+exports.createTodo = async (userId, description) => {
     const query = 'INSERT INTO todos (user_id, description) VALUES (?, ?)';
-    db.query(query, [userId, description], callback);
-}
+    try {
+        const [result] = await pool.query(query, [userId, description]);
+        return result;
+    } catch (err) {
+        console.error('Error creating todo:', err);
+        throw err;
+    }
+};
 
-exports.editTodo = (todoId, userId, description, callback) => {
+exports.editTodo = async (todoId, userId, description) => {
     const query = "UPDATE todos SET description = ? WHERE user_id = ? AND id = ?";
-    db.query(query, [description, userId, todoId], callback);
-}
+    try {
+        const [result] = await pool.query(query, [description, userId, todoId]);
+        return result;
+    } catch (err) {
+        console.error('Error updating todo:', err);
+        throw err;
+    }
+};
 
-exports.handleCompleted = (todoId, userId, completed, callback) => {
+exports.handleCompleted = async (todoId, userId, completed) => {
     const query = "UPDATE todos SET is_completed = ? WHERE user_id = ? AND id = ?";
-    db.query(query, [completed, userId, todoId], callback);
-}
+    try {
+        const [result] = await pool.query(query, [completed, userId, todoId]);
+        return result;
+    } catch (err) {
+        console.error('Error updating todo completion status:', err);
+        throw err;
+    }
+};
 
-exports.delete = (todoId, userId, callback) => {
+exports.delete = async (todoId, userId) => {
     const query = "DELETE FROM todos WHERE id = ? AND user_id = ?";
-    db.query(query, [todoId, userId], callback);
-}
+    try {
+        const [result] = await pool.query(query, [todoId, userId]);
+        return result;
+    } catch (err) {
+        console.error('Error deleting todo:', err);
+        throw err;
+    }
+};
 
-exports.deleteAllCompleted = ( userId, callback) => {
+exports.deleteAllCompleted = async (userId) => {
     const query = "DELETE FROM todos WHERE user_id = ? AND is_completed = ?";
-    db.query(query, [ userId, true], callback);
-}
-
-
+    try {
+        const [result] = await pool.query(query, [userId, 1]);
+        return result;
+    } catch (err) {
+        console.error('Error deleting all completed todos:', err);
+        throw err;
+    }
+};

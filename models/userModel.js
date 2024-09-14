@@ -1,53 +1,46 @@
-const db = require('../config/db');
+const pool = require('../config/db');
 
 exports.createUser = async (username, email, password) => {
-    return new Promise((resolve, reject) => {
-        const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
-        db.query(query, [username, email, password], (err, result) => {
-            if (err) {
-                reject(err); 
-            } else {
-                resolve(result); 
-            }
-        });
-    });
+    const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+    try {
+        const [result] = await pool.query(query, [username, email, password]);
+        return result;
+    } catch (err) {
+        console.error('Error inserting user:', err);
+        throw err;
+    }
 };
 
 exports.findUser = async (email) => {
-    return new Promise((resolve, reject) => { 
-        const query = 'SELECT id, username, email, password FROM users WHERE email = ?';
-        db.query(query, [email], (err, result) => {
-            if (err) {
-                reject(err); 
-            } else {
-                resolve(result); 
-            }
-        });
-    });
+    const query = 'SELECT id, username, email, password FROM users WHERE email = ?';
+    try {
+        const [rows] = await pool.query(query, [email]);
+        return rows;
+    } catch (err) {
+        console.error('Error finding user by email:', err);
+        throw err;
+    }
 };
 
 exports.findUserByEmail = async (email) => {
-    return new Promise((resolve, reject) => { 
-        const query = 'SELECT id, username, email FROM users WHERE email = ?';
-        db.query(query, [email], (err, result) => {
-            if (err) {
-                reject(err); 
-            } else {
-                resolve(result); 
-            }
-        });
-    });
+    const query = 'SELECT id, username, email FROM users WHERE email = ?';
+    try {
+        const [rows] = await pool.query(query, [email]);
+        return rows;
+    } catch (err) {
+        console.error('Error finding user by email:', err);
+        throw err;
+    }
 };
 
 exports.findUserById = async (id) => {
-    return new Promise((resolve, reject) => { 
-        const query = 'SELECT id, username, email FROM users WHERE id = ?';
-        db.query(query, [id], (err, result) => {
-            if (err) {
-                reject(err); 
-            } else {
-                resolve(result); 
-            }
-        });
-    });
+    const query = 'SELECT id, username, email FROM users WHERE id = ?';
+    try {
+        const [rows] = await pool.query(query, [id]);
+        return rows;
+    } catch (err) {
+        console.error('Error finding user by ID:', err);
+        throw err;
+    }
 };
+
