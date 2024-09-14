@@ -37,8 +37,6 @@ app.use(
   })
 );
 
-app.use(cors());
-
 app.get('/', (req, res) => {
    res.send('hello from simple server :)');
 });
