@@ -123,6 +123,7 @@ exports.isAuth = (req, res, next) => {
 exports.authenticate = async (req, res) => {
     const id = req.userId;
 
+    console.log(req.userId);
     try {
         const existingUser = await User.findUserById(id);
         if (existingUser.length === 0) {
