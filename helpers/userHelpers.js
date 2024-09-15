@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 
 const transport = nodemailer.createTransport({
     service: 'hotmail',
@@ -8,6 +9,13 @@ const transport = nodemailer.createTransport({
         pass: process.env.EMAIL_PASSWORD
     },
 })
+
+exports.generateToken = (user, type, expiresIn) => {
+  return jwt.sign({ _id: user._id, type }, process.env.JWT_SECRET, {
+    expiresIn,
+  });
+};
+
 
 exports.hashPassword = (password) => {
     return new Promise((resolve, reject) => {

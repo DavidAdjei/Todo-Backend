@@ -1,6 +1,5 @@
 const User = require('../models/userModel');
-const db = require("../config/db");
-const { hashPassword, comparePassword } = require('../helpers/userHelpers');
+const { hashPassword, comparePassword, generateToken } = require('../helpers/userHelpers');
 const jwt = require('jsonwebtoken');
 
 exports.createUser = async (req, res) => {
@@ -37,9 +36,12 @@ exports.createUser = async (req, res) => {
             });
         }
 
-        req.session.user = newUser.id;
-        return res.status(200).json({
-            user: newUser[0]
+        const token = generateToken(newUser[0].id , 'auth', '3d' );
+
+        res.cookie('authToken', token, {
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production', 
+            maxAge: 1000 * 60 * 60 * 24 * 3,
         });
 
     } catch (err) {
@@ -52,7 +54,7 @@ exports.createUser = async (req, res) => {
 
 
 exports.loginUser = async (req, res) => {
-    const {email, password } = req.body;
+    const { email, password } = req.body;
 
     if (!email || !password) {
         return res.status(401).json({
@@ -74,11 +76,17 @@ exports.loginUser = async (req, res) => {
         const match = await comparePassword(password, hashed);
         if (!match) {
             return res.status(404).json({
-                error: "Inncorrect credentials"
-            })
+                error: "Incorrect credentials"
+            });
         }
         
-        req.session.user = existingUser.id;
+        const token = generateToken(newUser[0].id , 'auth', '3d' );
+        res.cookie('authToken', token, {
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production', 
+            maxAge: 1000 * 60 * 60 * 24 * 3,
+        });
+
         return res.status(200).json({
             user: existingUser[0]
         });
@@ -91,15 +99,28 @@ exports.loginUser = async (req, res) => {
 };
 
 exports.isAuth = (req, res, next) => {
-  if (req.session.user) {
-    next();
-  } else {
-    return res.status(403).json({ error: "Not authenticated" });
-  }
+    const token = req.cookies.authToken;
+
+    if (!token) {
+        return res.status(403).json({ error: "Not authenticated" });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.envJWT_SECRET);
+        if (decoded.type !== "auth") {
+            return res.status(400).json({ error: "Invalid token" });
+        }
+        req.userId = decoded.id; 
+        next();
+    } catch (err) {
+        console.error("Token verification error:", err);
+        return res.status(403).json({ error: "Not authenticated" });
+    }
 };
 
 exports.authenticate = async (req, res) => {
-    const id = req.session.user;
+    const id = req.userId;
+
     try {
         const existingUser = await User.findUserById(id);
         if (existingUser.length === 0) {
@@ -111,8 +132,21 @@ exports.authenticate = async (req, res) => {
             user: existingUser[0]
         });
     } catch (err) {
+        console.error("Error fetching user:", err);
         return res.status(500).json({
             error: "Internal Server Error"
         });
     }
 };
+
+exports.logout = (req, res) => {
+    res.cookie('authToken', '', {
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production',
+        expires: new Date(0) 
+    });
+    return res.status(200).json({
+        message: "Successfully logged out"
+    });
+};
+
