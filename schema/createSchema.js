@@ -7,13 +7,14 @@ exports.createSchema = async () => {
     console.log("USER:", process.env.USER);
     console.log("PASSWORD:", process.env.PASSWORD ? '********' : 'Not provided');
     
-    const db = await mysql.createConnection({
-        host: process.env.HOST,
-        user: process.env.USER,
-        password: process.env.PASSWORD
-    });
-
+    let db;
     try {
+        db = await mysql.createConnection({
+            host: process.env.HOST,
+            user: process.env.USER,
+            password: process.env.PASSWORD
+        });
+
         await db.query(createDb);
         await db.query(useDb);
         await db.query(createUserTable);
@@ -23,6 +24,8 @@ exports.createSchema = async () => {
     } catch (error) {
         console.error('Schema creation failed', error);
     } finally {
-        await db.end();
+        if (db) {
+            await db.end();
+        }
     }
 };

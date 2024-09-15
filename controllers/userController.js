@@ -37,7 +37,7 @@ exports.createUser = async (req, res) => {
             });
         }
 
-        req.session.user = newUser.id;
+        req.session.user = newUser[0].id;
         return res.status(200).json({
             user: newUser[0]
         });
@@ -78,7 +78,7 @@ exports.loginUser = async (req, res) => {
             })
         }
         
-        req.session.user = existingUser.id;
+        req.session.user = existingUser[0].id;
         return res.status(200).json({
             user: existingUser[0]
         });
@@ -91,6 +91,7 @@ exports.loginUser = async (req, res) => {
 };
 
 exports.isAuth = (req, res, next) => {
+    console.log(req.session.user)
   if (req.session.user) {
     next();
   } else {
@@ -100,6 +101,7 @@ exports.isAuth = (req, res, next) => {
 
 exports.authenticate = async (req, res) => {
     const id = req.session.user;
+    console.log(id);
     try {
         const existingUser = await User.findUserById(id);
         if (existingUser.length === 0) {
