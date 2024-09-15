@@ -40,6 +40,7 @@ exports.createUser = async (req, res) => {
 
         res.cookie('authToken', token, {
             httpOnly: true, 
+            sameSite: 'none',
             secure: process.env.NODE_ENV === 'production', 
             maxAge: 1000 * 60 * 60 * 24 * 3,
         });
@@ -84,6 +85,7 @@ exports.loginUser = async (req, res) => {
         res.cookie('authToken', token, {
             httpOnly: true, 
             secure: process.env.NODE_ENV === 'production', 
+            sameSite: 'none',
             maxAge: 1000 * 60 * 60 * 24 * 3,
         });
 
@@ -144,6 +146,7 @@ exports.logout = (req, res) => {
     res.cookie('authToken', '', {
         httpOnly: true, 
         secure: process.env.NODE_ENV === 'production',
+        sameSite: 'none',
         expires: new Date(0) 
     });
     return res.status(200).json({
