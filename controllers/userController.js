@@ -101,6 +101,7 @@ exports.loginUser = async (req, res) => {
 
 exports.isAuth = (req, res, next) => {
     const token = req.cookies.authToken;
+    console.log(req.cookies);
 
     if (!token) {
         return res.status(403).json({ error: "Not authenticated" });
