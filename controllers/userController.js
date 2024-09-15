@@ -80,7 +80,7 @@ exports.loginUser = async (req, res) => {
             });
         }
         
-        const token = generateToken(newUser[0].id , 'auth', '3d' );
+        const token = generateToken(existingUser[0].id , 'auth', '3d' );
         res.cookie('authToken', token, {
             httpOnly: true, 
             secure: process.env.NODE_ENV === 'production', 
