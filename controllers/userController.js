@@ -101,14 +101,13 @@ exports.loginUser = async (req, res) => {
 
 exports.isAuth = (req, res, next) => {
     const token = req.cookies.authToken;
-    console.log(req.cookies);
 
     if (!token) {
         return res.status(403).json({ error: "Not authenticated" });
     }
 
     try {
-        const decoded = jwt.verify(token, process.envJWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if (decoded.type !== "auth") {
             return res.status(400).json({ error: "Invalid token" });
         }
