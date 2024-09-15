@@ -88,8 +88,6 @@ exports.loginUser = async (req, res) => {
             sameSite: 'none',
             maxAge: 1000 * 60 * 60 * 24 * 3,
         });
-
-        console.log(req.cookies)
         return res.status(200).json({
             user: existingUser[0]
         });
@@ -103,6 +101,7 @@ exports.loginUser = async (req, res) => {
 
 exports.isAuth = (req, res, next) => {
     const token = req.cookies.authToken;
+    console.log(req.cookies);
 
     if (!token) {
         return res.status(403).json({ error: "Not authenticated" });
