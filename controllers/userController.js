@@ -87,6 +87,7 @@ exports.loginUser = async (req, res) => {
             maxAge: 1000 * 60 * 60 * 24 * 3,
         });
 
+        console.log(req.cookies)
         return res.status(200).json({
             user: existingUser[0]
         });
